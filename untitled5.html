@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>秘密信件 · 加密信封 · 轻音背景乐</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f7f3e9 0%, #e9dfce 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: system-ui, 'Segoe UI', 'Helvetica Neue', 'Noto Sans', sans-serif;
+            padding: 12px;
+            margin: 0;
+        }
+        /* 主卡片容器 - 宽度占屏幕90% */
+        .card {
+            background: rgba(255, 248, 235, 0.95);
+            border-radius: 48px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 200, 0.6);
+            width: 90%;
+            max-width: 550px;
+            padding: 28px 20px 40px;
+            text-align: center;
+            backdrop-filter: blur(2px);
+            transition: all 0.2s ease;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        /* 音乐开关按钮 */
+        .music-toggle {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(255,255,240,0.9);
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        .music-toggle:active {
+            transform: scale(0.95);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            color: #5e3a1f;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .sub {
+            color: #b97f44;
+            border-bottom: 1px dashed #e7c9a3;
+            display: inline-block;
+            padding-bottom: 4px;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+        }
+        .open-btn {
+            background: #fff2e2;
+            border: 2px solid #dbb47a;
+            padding: 14px 24px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #8b5a2b;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 6px 0 #c29a6b;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .open-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #c29a6b;
+        }
+
+        /* 信封展示区域 */
+        .envelope-area {
+            min-height: 280px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        /* 白色信封样式 - 加宽 */
+        .white-envelope {
+            position: relative;
+            width: 95%;
+            max-width: 500px;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            animation: gentleFloat 0.5s ease-out;
+            margin: 0 auto;
+        }
+
+        .envelope-front {
+            background: #fffef7;
+            border-radius: 28px;
+            padding: 36px 16px 44px;
+            text-align: center;
+            position: relative;
+            border: 1px solid #f2e0c0;
+        }
+        .envelope-front::before {
+            content: "✉️";
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 46px;
+            opacity: 0.5;
+            color: #d6a15a;
+        }
+
+        .envelope-icon {
+            font-size: 80px;
+            margin-top: 20px;
+            margin-bottom: 12px;
+        }
+
+        .envelope-label {
+            font-size: 1.15rem;
+            color: #ac8e64;
+            background: #fcf4e6;
+            display: inline-block;
+            padding: 8px 24px;
+            border-radius: 60px;
+            margin-top: 10px;
+        }
+
+        /* 展开后的信纸 */
+        .opened-letter {
+            background: #fffef5;
+            border-radius: 32px;
+            padding: 32px 24px;
+            width: 95%;
+            max-width: 520px;
+            margin: 0 auto;
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.2);
+            border: 1px solid #f7e5cc;
+            text-align: left;
+            animation: fadeSlide 0.4s ease;
+        }
+
+        .opened-letter h3 {
+            color: #c2813b;
+            border-left: 5px solid #e7bc85;
+            padding-left: 16px;
+            margin-bottom: 24px;
+            font-size: 1.5rem;
+        }
+
+        .opened-letter p {
+            color: #4a311c;
+            line-height: 1.75;
+            margin: 20px 0;
+            font-size: 1rem;
+            text-indent: 2em;
+        }
+
+        .signature {
+            text-align: right;
+            margin-top: 32px;
+            font-style: italic;
+            color: #b38b54;
+            border-top: 1px dashed #eedbbc;
+            padding-top: 16px;
+        }
+
+        /* 自定义密码错误弹窗 */
+        .custom-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.2s, opacity 0.2s;
+        }
+        .custom-modal.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .custom-modal .modal-card {
+            background: #ffffff;
+            width: 300px;
+            max-width: 85%;
+            border-radius: 48px;
+            padding: 32px 24px 36px;
+            text-align: center;
+            box-shadow: 0 30px 40px rgba(0,0,0,0.2);
+            border: 1px solid #f5e6d2;
+        }
+        .custom-modal .modal-card h2 {
+            font-size: 1.8rem;
+            color: #c2813b;
+            margin-bottom: 12px;
+        }
+        .custom-modal .modal-card p {
+            font-size: 1.1rem;
+            color: #866745;
+            margin: 16px 0 24px;
+        }
+        .custom-modal .modal-card button {
+            background: #f3d5a5;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #5a3a1a;
+            cursor: pointer;
+        }
+        /* 密码输入和询问模态框 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.2s, opacity 0.2s;
+        }
+        .modal.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-card {
+            background: #fffef7;
+            width: 300px;
+            max-width: 85%;
+            border-radius: 48px;
+            padding: 28px 20px 30px;
+            text-align: center;
+            box-shadow: 0 30px 40px rgba(0,0,0,0.2);
+            border: 1px solid #ffefda;
+        }
+        .modal-card p {
+            font-size: 1.25rem;
+            margin: 12px 0 18px;
+            color: #644e34;
+        }
+        .modal-card input {
+            width: 90%;
+            padding: 12px 15px;
+            margin: 12px 0;
+            border: 1.5px solid #e1c7a8;
+            border-radius: 60px;
+            font-size: 1rem;
+            text-align: center;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 18px;
+        }
+        .btn {
+            border: none;
+            background: #efe2d0;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: #f3d5a5;
+            color: #663f12;
+            box-shadow: 0 3px 0 #bf8f55;
+        }
+        .error-tip {
+            color: #d9714b;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+        @keyframes gentleFloat {
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: scale(0.96); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+<div class="card" id="mainCard">
+    <button class="music-toggle" id="musicToggleBtn" title="音乐开关">🎵</button>
+    <h1>✉️ 密 函 驿 站</h1>
+    <div class="sub">一封待启的信，只为对的人</div>
+    <div class="open-btn" id="triggerBtn">📬 点此开启信件 📬</div>
+    <div id="envelopeArea" class="envelope-area">
+        <div style="color: #cdb28c; font-size: 0.9rem;">✨ 轻触上方「开启信件」 ✨</div>
+    </div>
+</div>
+
+<!-- 密码输入模态框 -->
+<div id="passwordModal" class="modal">
+    <div class="modal-card">
+        <span style="font-size:40px;">🔐</span>
+        <p>请输入信件密码</p>
+        <input type="password" id="passwordInput" placeholder="密码" autocomplete="off">
+        <div class="button-group">
+            <button class="btn" id="cancelPwdBtn">取消</button>
+            <button class="btn btn-primary" id="submitPwdBtn">验证</button>
+        </div>
+        <div class="error-tip" id="pwdErrorTip"></div>
+    </div>
+</div>
+
+<!-- 询问是否查看模态框 -->
+<div id="confirmModal" class="modal">
+    <div class="modal-card">
+        <span style="font-size:42px;">📬✨</span>
+        <p>你有一封新信件是否需要查看？</p>
+        <div class="button-group">
+            <button class="btn" id="noBtn">No</button>
+            <button class="btn btn-primary" id="yesBtn">Yes</button>
+        </div>
+    </div>
+</div>
+<!-- 密码错误弹窗 -->
+<div id="errorModal" class="custom-modal">
+    <div class="modal-card">
+        <h2>陈某人提醒您</h2>
+        <p>密码错误！请再试一遍</p>
+        <button id="errorConfirmBtn">确 定</button>
+    </div>
+</div>
+
+<script>
+    // ======================= 可配置区域 =======================
+    const MUSIC_URL = 'Jeff Jarvis - Off The Hook.mp3';            // 请填写音乐文件路径，例如 './bgm.mp3'
+    const MUSIC_VOLUME = 0.6;        // 音量 60%
+    const CORRECT_PASSWORD = "123456";
+
+    // ======================= Web Audio API 音乐控制（带即时停止） =======================
+    let audioContext = null;          // 音频上下文
+    let audioBuffer = null;           // 解码后的音频数据
+    let musicEnabled = true;           // 音乐开关状态
+    let isMusicPreloaded = false;      // 是否已预加载
+    let currentSource = null;          // 当前播放的 source 节点（用于停止）
+    let currentGain = null;            // 当前播放的 gain 节点（可选，音量已固定）
+
+    // 预加载音乐文件
+    function preloadMusic() {
+        if (!MUSIC_URL || MUSIC_URL.trim() === '') {
+            console.log("未配置音乐，跳过预加载");
+            return;
+        }
+        fetch(MUSIC_URL)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.arrayBuffer();
+            })
+            .then(arrayBuffer => {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                return audioContext.decodeAudioData(arrayBuffer);
+            })
+            .then(buffer => {
+                audioBuffer = buffer;
+                isMusicPreloaded = true;
+                console.log("音乐预加载成功，等待手势激活");
+            })
+            .catch(err => {
+                console.warn("音乐预加载失败，请检查 MUSIC_URL 路径是否正确:", err);
+                isMusicPreloaded = false;
+            });
+    }
+
+    // 停止当前正在播放的音乐（立即）
+    function stopCurrentMusic() {
+        if (currentSource) {
+            try {
+                currentSource.stop();
+            } catch (e) {
+                // 可能已经停止
+            }
+            currentSource = null;
+            currentGain = null;
+        }
+    }
+    // 播放音乐（必须由用户手势触发）
+    function playBackgroundMusic() {
+        if (!musicEnabled) {
+            console.log("音乐开关已关闭");
+            return;
+        }
+        if (!isMusicPreloaded || !audioBuffer) {
+            console.log("音乐未预加载或无效，无法播放");
+            return;
+        }
+        // 先停止当前正在播放的音乐（避免重叠）
+        stopCurrentMusic();
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        // 如果 AudioContext 是 suspended 状态，先 resume（用户手势可以做到）
+        const resumePromise = audioContext.state === 'suspended' ? audioContext.resume() : Promise.resolve();
+        resumePromise.then(() => {
+            // 创建播放源和增益节点
+            const source = audioContext.createBufferSource();
+            const gainNode = audioContext.createGain();
+            source.buffer = audioBuffer;
+            gainNode.gain.value = MUSIC_VOLUME;
+            source.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            source.start();
+            // 保存引用以便停止
+            currentSource = source;
+            currentGain = gainNode;
+            // 播放结束后清除引用
+            source.onended = () => {
+                if (currentSource === source) {
+                    currentSource = null;
+                    currentGain = null;
+                }
+            };
+            console.log("音乐开始播放");
+        }).catch(e => {
+            console.warn("AudioContext 恢复失败，可能缺少用户手势:", e);
+        });
+    }
+
+    // 音乐开关切换（支持即时停止）
+    function toggleMusic() {
+        musicEnabled = !musicEnabled;
+        const toggleBtn = document.getElementById('musicToggleBtn');
+        if (toggleBtn) toggleBtn.textContent = musicEnabled ? "🎵" : "🔇";
+        if (!musicEnabled) {
+            // 关闭音乐时立即停止当前播放
+            stopCurrentMusic();
+        }
+        // 打开音乐时不自动播放，等待下次展开信件时由用户手势触发
+    }
+
+    // 开始预加载（页面加载后）
+    preloadMusic();
+
+    // ======================= 信件交互核心逻辑 =======================
+    let isEnvelopeExpanded = false;
+    let isCleanMode = false;
+
+    // DOM 元素
+    const triggerBtn = document.getElementById('triggerBtn');
+    const envelopeArea = document.getElementById('envelopeArea');
+    const passwordModal = document.getElementById('passwordModal');
+    const passwordInput = document.getElementById('passwordInput');
+    const submitPwdBtn = document.getElementById('submitPwdBtn');
+    const cancelPwdBtn = document.getElementById('cancelPwdBtn');
+    const pwdErrorTip = document.getElementById('pwdErrorTip');
+    const confirmModal = document.getElementById('confirmModal');
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const errorModal = document.getElementById('errorModal');
+    const errorConfirmBtn = document.getElementById('errorConfirmBtn');
+    const musicToggleBtn = document.getElementById('musicToggleBtn');
+    const sub = document.querySelector('.sub');
+    // 模态框控制
+    function hideModal(modal) {
+        modal.classList.remove('active');
+        if (modal === passwordModal) {
+            passwordInput.value = '';
+            pwdErrorTip.innerText = '';
+        }
+    }
+    function showModal(modal) {
+        modal.classList.add('active');
+    }
+
+    // 进入干净模式（隐藏主按钮和副标题）
+    function enterCleanMode() {
+        if (isCleanMode) return;
+        isCleanMode = true;
+        if (sub) sub.classList.add('hidden');
+        triggerBtn.classList.add('hidden');
+    }
+
+    // 清空信封区域
+    function clearEnvelopeArea() {
+        envelopeArea.innerHTML = '';
+        isEnvelopeExpanded = false;
+        if (!isCleanMode) {
+            const placeholder = document.createElement('div');
+            placeholder.style.color = '#cdb28c';
+            placeholder.style.fontSize = '0.9rem';
+            placeholder.innerText = '✨ 轻触上方「开启信件」 ✨';
+            envelopeArea.appendChild(placeholder);
+        }
+    }
+
+    // 显示未开封的白色信封
+    function displayWhiteEnvelope() {
+        clearEnvelopeArea();
+        isEnvelopeExpanded = false;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'white-envelope';
+        wrapper.innerHTML = `
+            <div class="envelope-front">
+                <div class="envelope-icon">✉️</div>
+                <div class="envelope-label">· 未 开 封 ·</div>
+            </div>
+        `;
+        wrapper.addEventListener('click', () => {
+            if (isEnvelopeExpanded) return;
+            expandLetterContent(wrapper);
+            isEnvelopeExpanded = true;
+        });
+        envelopeArea.appendChild(wrapper);
+    }
+
+    // 展开信件内容
+    function expandLetterContent(envelopeDom) {
+        const letter = document.createElement('div');
+        letter.className = 'opened-letter';
+        letter.innerHTML = `
+            <h3>📜 致 亲 爱 的 朋 友</h3>
+            <p>　　见字如面。当你打开这封信的时候，星光正落在窗台，月光洗过旧日的尘埃。不知你此刻怀着怎样的心情，但既然密码正确，我们一定是特别的缘分。</p>
+            <p>　　这份秘密信件是我为你预留的一份小小心意，愿你每一天都有勇气拆开生活中的惊喜，永远保有对美好的期待。<br>　　愿春风伴你，日月温柔。</p>
+            <div class="signature">✍️ 你忠实的友人 · 信使<br>「 心之所向 信之所往 」</div>
+        `;
+        envelopeDom.replaceWith(letter);
+        // 播放背景音乐（用户手势点击信封触发）
+        playBackgroundMusic();
+    }
+
+    // 密码验证
+    function verifyPassword() {
+        const pwd = passwordInput.value.trim();
+        if (pwd === "") {
+            pwdErrorTip.innerText = "🔒 请输入密码";
+            return;
+        }
+        if (pwd === CORRECT_PASSWORD) {
+            pwdErrorTip.innerText = "";
+            hideModal(passwordModal);
+            showModal(confirmModal);
+        } else {
+            showModal(errorModal);
+            passwordInput.value = "";
+            passwordInput.focus();
+        }
+    }
+    // 开启流程
+    function startOpenLetter() {
+        if (isCleanMode) return;
+        clearEnvelopeArea();
+        showModal(passwordModal);
+        setTimeout(() => passwordInput.focus(), 100);
+    }
+
+    // 询问模态框 Yes
+    function onConfirmYes() {
+        hideModal(confirmModal);
+        enterCleanMode();
+        displayWhiteEnvelope();
+    }
+
+    // 询问模态框 No
+    function onConfirmNo() {
+        hideModal(confirmModal);
+    }
+
+    // 事件绑定
+    triggerBtn.addEventListener('click', startOpenLetter);
+    submitPwdBtn.addEventListener('click', verifyPassword);
+    cancelPwdBtn.addEventListener('click', () => hideModal(passwordModal));
+    yesBtn.addEventListener('click', onConfirmYes);
+    noBtn.addEventListener('click', onConfirmNo);
+    musicToggleBtn.addEventListener('click', toggleMusic);
+    errorConfirmBtn.addEventListener('click', () => hideModal(errorModal));
+    errorModal.addEventListener('click', (e) => { if (e.target === errorModal) hideModal(errorModal); });
+    passwordModal.addEventListener('click', (e) => { if (e.target === passwordModal) hideModal(passwordModal); });
+    confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) hideModal(confirmModal); });
+    passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') verifyPassword(); });
+
+    // 初始化
+    clearEnvelopeArea();
+</script>
+</body>
+</html>
